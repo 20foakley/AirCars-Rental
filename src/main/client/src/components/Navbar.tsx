@@ -40,18 +40,20 @@ const Navbar = () => {
                   >Home</NavLink
                 >
                 <NavLink
-                  to="/cars"
+                  to="/listings"
                   className={linkClass}
                   >Cars</NavLink
                 >
                 <NavLink
-                  to="/add-cars"
+                  to="/profile"
                   className={linkClass}
-                  >Add Cars</NavLink
+                  >Profile</NavLink
                 >
 
-                <button onClick = {() => setIsOpen(!isOpen)} className = "md:hidden">
-                  <Menu className = "w-6 h-6 text-black"/>
+                {/* need to add login/signup vs logout with state */}
+
+                <button onClick = {() => setIsOpen(!isOpen)} className = "">
+                  <Menu className = " z-10 w-6 h-6 text-black"/>
                 </button>
                 {isOpen && (
                   <div className = "absolute right-0 top-12 bg-gray-700 p-4 rounded">

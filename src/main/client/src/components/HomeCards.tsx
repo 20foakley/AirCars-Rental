@@ -7,7 +7,7 @@ import Listings_Card_Image2 from '../assets/images/listings-card.jpg'
 const HomeCards = () => {
   return (
     <section className="py-4">
-      <div className=" bg-white text-lg font-bold p-6 rounded-lg shadow-md justify-center items-center align-middle">
+      <div className=" bg-white text-lg font-bold p-6 rounded-lg shadow-md justify-center text-center align-middle">
         Find your perfect fit anywhere, anytime.
         <div font-normal>Spice up your plans.</div>
       </div>

@@ -1,8 +1,12 @@
 import React from 'react'
+import CarListings from '../components/CarListings';
 
 const CarsPage = () => {
   return (
-    <div>CarsPage</div>
+    <>
+        <div>CarsPage</div>
+        <CarListings/>
+    </>
   )
 }
 

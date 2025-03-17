@@ -3,8 +3,12 @@
     {
       "id": "1",
       "make": "Toyota",
+      "model": "Camry",
+      "year": "2011",
+      "submodel": "LE",
       "features": {
-        "leather": 1
+        "leather": 1,
+        "aux": 1
       }
       }
   ]
