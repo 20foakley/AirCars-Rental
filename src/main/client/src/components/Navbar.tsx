@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '../assets/images/hero-car.jpg'
+import logo from '../assets/images/car_icon_126245.webp'
 import {NavLink} from 'react-router-dom'
 import { Menu } from "lucide-react";
 
@@ -24,7 +24,7 @@ const Navbar = () => {
             {/* <!-- Logo --> */}
             <NavLink className="flex flex-shrink-0 items-center mr-4" to="/">
               <img
-                className="h-10 w-auto"
+                className="h-12 w-auto"
                 src={logo}
                 alt="Car Rentals"
               />

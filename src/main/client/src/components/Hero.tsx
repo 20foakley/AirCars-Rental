@@ -1,6 +1,6 @@
 import React from "react";
 import HeroListingFinder from "./HeroListingFinder";
-import Hero_Image from '../assets/images/hero-car.jpg'
+import Hero_Image from '../assets/images/pexels-photo-5329539.jpeg'
 
 
 const Hero = () => {

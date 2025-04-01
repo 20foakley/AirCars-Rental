@@ -19,10 +19,10 @@ public class Users implements Serializable {
     @OneToMany(mappedBy = "owner")
     private List<Listings> ownedListings;
 
-    @OneToMany(mappedBy = "renter")
+    @OneToMany(mappedBy = "renterUser")
     private List<Rentals> rentals;
 
-    @OneToMany(mappedBy = "reviewer")
+    @OneToMany(mappedBy = "reviewerUser")
     private List<Reviews> givenReviews;
 
     @OneToMany(mappedBy = "reviewedUser")

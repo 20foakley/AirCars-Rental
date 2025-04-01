@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
-
+@Entity
+@Table(name="rentals", schema="p2p_car_rental")
 public class Rentals {
 
     @Id
@@ -21,7 +22,8 @@ public class Rentals {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_user_id")
-    private int ownerUser;
+    // had this as an int instead of Users before which missed the point of this being an abstraction of db
+    private Users ownerUser;
     //------------------------------------//
 
     @NotNull

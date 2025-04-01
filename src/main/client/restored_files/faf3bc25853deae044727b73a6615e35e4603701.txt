@@ -1,7 +1,0 @@
-﻿package com.example.carrentalproject.models;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-
-
-public class UserRepository {
-}

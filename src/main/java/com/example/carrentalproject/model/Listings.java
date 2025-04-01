@@ -17,7 +17,8 @@ import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
-
+@Entity
+@Table(name="listings",schema="p2p_car_rental")
 public class Listings {
 
     @Id

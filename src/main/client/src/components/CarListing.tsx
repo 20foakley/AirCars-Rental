@@ -3,7 +3,9 @@ import {Link} from 'react-router-dom'
 import {useState} from "react";
 import {FaMapMarker} from 'react-icons/fa'
 
+
 const CarListing = ({car}) => {
+    return (
 
     // needs to have make, model, year
     // picture, description, user
@@ -55,5 +57,6 @@ const CarListing = ({car}) => {
 
 
     </div>
+    )
 }
 export default CarListing;

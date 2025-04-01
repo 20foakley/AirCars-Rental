@@ -13,7 +13,7 @@ interface HeroListingFinderProps {
     longitude: string;
     startDateTime: string;
     endDateTime: string;
-    timezone?: string;
+    timezone: string;
   }) => void;
 }
 
@@ -125,7 +125,7 @@ const HeroListingFinder = ({ onSearch }: HeroListingFinderProps) => {
       longitude,
       startDateTime: `${formData.fromDate}T${formData.fromTime}`,
       endDateTime: `${formData.untilDate}T${formData.untilTime}`,
-      timezone
+      timezone: timezone
   });
   }catch(error){
     console.error('Error submitting form: ',error);
@@ -134,77 +134,59 @@ const HeroListingFinder = ({ onSearch }: HeroListingFinderProps) => {
 
 
   return (
-    <>
-      <div className="absolute top-[20%] left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-lg p-6 w-[90%] max-w-6xl">
-        <form onSubmit={handleSubmit} className="flex items-center justify-between space-x-6">
-          
-          <div className="flex flex-col w-1/4">
-            <label className="text-lg font-semibold">Where</label>
-            <Select
-              options={locationOptions}
-              onInputChange={handleLocationSearch}
-              onChange={handleLocationChange}
-              placeholder="Enter an address"
-              className="w-full p-2 border border-gray-300 rounded-md"
+    <div className="absolute top-[20%] left-1/2 transform -translate-x-1/2 bg-white/80 shadow-sm rounded-full p-2 w-[50%]  backdrop-blur-md">
+      <form onSubmit={handleSubmit} className="flex items-center space-x-3">
+        
+        <div className="flex-1">
+          <Select
+            options={locationOptions}
+            onInputChange={handleLocationSearch}
+            onChange={handleLocationChange}
+            placeholder="Where to?"
+            className="w-full p-2 text-sm border-none bg-transparent focus:outline-none placeholder-gray-500"
             />
-          </div>
+        </div>
   
-          <div className="flex flex-col w-1/6">
-            <label className="text-lg font-semibold">From</label>
-            <input
-              type="date"
-              name="fromDate"
-              value={formData.fromDate}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          <div className="flex flex-col w-1/6">
-            <label className="text-lg font-semibold">Time</label>
-            <input
-              type="time"
-              name="fromTime"
-              value={formData.fromTime}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          <div className="flex flex-col w-1/6">
-            <label className="text-lg font-semibold">Until</label>
-            <input
-              type="date"
-              name="untilDate"
-              value={formData.untilDate}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          <div className="flex flex-col w-1/6">
-            <label className="text-lg font-semibold">Time</label>
-            <input
-              type="time"
-              name="untilTime"
-              value={formData.untilTime}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-          </div>
+        <input
+          type="date"
+          name="fromDate"
+          value={formData.fromDate}
+          onChange={handleInputChange}
+          className="p-2 text-sm border border-gray-300 rounded-full w-[120px]"
+        />
   
-          <div className="flex items-center">
-            <button
-              type="submit"
-              className="bg-indigo-500 text-white py-3 px-6 rounded-md hover:bg-indigo-600 w-full sm:w-auto"
-            >
-              <FaSearch className="mr-2"/>
-            </button>
-          </div>
+        <input
+          type="time"
+          name="fromTime"
+          value={formData.fromTime}
+          onChange={handleInputChange}
+          className="p-2 text-sm border border-gray-300 rounded-full w-[100px]"
+        />
+        <input
+          type="date"
+          name="untilDate"
+          value={formData.untilDate}
+          onChange={handleInputChange}
+          className="p-2 text-sm border border-gray-300 rounded-full w-[120px]"
+        />
   
-        </form>
-      </div>
-    </>
+        <input
+          type="time"
+          name="untilTime"
+          value={formData.untilTime}
+          onChange={handleInputChange}
+          className="p-2 text-sm border border-gray-300 rounded-full w-[100px]"
+        />
+  
+        <button
+          type="submit"
+          className="bg-indigo-500 text-white p-3 rounded-full hover:bg-indigo-600 flex items-center justify-center w-[45px] h-[45px]"
+        >
+          <FaSearch />
+        </button>
+  
+      </form>
+    </div>
   );
 }
 

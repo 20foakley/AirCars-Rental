@@ -5,6 +5,7 @@ import org.hibernate.annotations.Check;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import com.example.carrentalproject.model.Listings;
 
 @Entity
 @Table(name = "reviews", schema = "p2p_car_rental",
