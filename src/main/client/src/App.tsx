@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage.tsx'
 import MainLayout from './layouts/MainLayout'
 import CarsPage from './pages/CarsPage.tsx'
 import NotFoundPage from './pages/NotFoundPage.tsx'
+import { AuthProvider } from './components/context/AuthContext.tsx'
 
 
 const App = () => {

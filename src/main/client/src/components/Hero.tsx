@@ -5,8 +5,9 @@ import Hero_Image from '../assets/images/pexels-photo-5329539.jpeg'
 
 const Hero = () => {
   return (
-    <section className="bg-white">
-      <div className="relative w-full h-[60vh] mt-6"> 
+    <section className="bg-white z-0">
+      <div className="relative w-full min-h-[60vh] mt-2 overflow-hidden">
+ 
         <HeroListingFinder />
         <picture className="absolute inset-0 w-full h-full">
           {/* fallback image */}

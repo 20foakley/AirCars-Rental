@@ -6,7 +6,7 @@ import Listings_Card_Image2 from '../assets/images/listings-card.jpg'
 
 const HomeCards = () => {
   return (
-    <section className="py-4">
+    <section className="py-0">
       
 
 
