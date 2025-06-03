@@ -5,6 +5,8 @@ import useUserLocation from '../hooks/useUserLocation';
 import useReverseGeocode from '../hooks/useReverseGeocode';
 import { FaSearch } from 'react-icons/fa';
 
+// todo - implement a map overview that shows locations of all available listings matching search criteria, centered at selected location
+
 const NOMINATIM_BASE_URL = "https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=";
 
 interface HeroListingFinderProps {
@@ -38,7 +40,7 @@ const HeroListingFinder = ({ onSearch }: HeroListingFinderProps) => {
 
   const [locationOptions, setLocationOptions] = useState<LocationOption[]>([]);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { location } = useUserLocation();
+  const { location } = useUserLocation(); // this doesn't do anything super meaningful yet - but it does grab your lat/lon!
 
   // Hooks here
   const {fetchTimeZone,timezone,error} = useReverseGeocode();
@@ -134,7 +136,7 @@ const HeroListingFinder = ({ onSearch }: HeroListingFinderProps) => {
 
 
   return (
-    <div className="absolute top-[20%] left-1/2 transform -translate-x-1/2 bg-white/80 shadow-sm rounded-full p-2 w-[50%]  backdrop-blur-md">
+    <div className="absolute top-[20%] left-1/2 transform -translate-x-1/2 bg-white/80 shadow-sm rounded-full p-2   backdrop-blur-md">
       <form onSubmit={handleSubmit} className="flex items-center space-x-3">
         
         <div className="flex-1">

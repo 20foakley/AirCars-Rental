@@ -13,9 +13,9 @@ public class Users implements Serializable {
     public Users(){
     }
 
-    public Users(String username, String password, String email) {
+    public Users(String username, String hashedPassword , String email) {
         this.username = username;
-        this.password = password;  // hashed password
+        this.hashedPassword  = hashedPassword ;  // hashed password
         this.email = email;
     }
 
@@ -53,7 +53,7 @@ public class Users implements Serializable {
 
     @NotNull
     @Column(nullable = false, length = 60)
-    private String password;
+    private String hashedPassword ;
 
     @Column(name = "is_renter")
     private Boolean isRenter;
@@ -153,12 +153,12 @@ public class Users implements Serializable {
         this.first_name = first_name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getHashedPassword () {
+        return hashedPassword ;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHashedPassword (String hashedPassword ) {
+        this.hashedPassword  =hashedPassword ;
     }
 
     public Boolean getRenter() {

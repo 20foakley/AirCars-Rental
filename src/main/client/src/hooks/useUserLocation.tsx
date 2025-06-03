@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+// hook is ran on HeroListingFinder to populate user location
+
 const useUserLocation = () => {
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [error, setError] = useState<string | null>(null);

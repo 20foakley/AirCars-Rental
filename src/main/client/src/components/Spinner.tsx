@@ -1,6 +1,8 @@
 import React from 'react'
 import ClipLoader from 'react-spinners/Cliploader'
 
+// not currently implemented for loading - on todo list
+
 const override = {
     display: 'block',
     margin: '100px auto'

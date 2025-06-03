@@ -6,7 +6,7 @@ import {FaMapMarker} from 'react-icons/fa'
 
 const CarListing = ({car}) => {
     return (
-
+    // PLACEHOLDER
     // needs to have make, model, year
     // picture, description, user
     // comments eventually?

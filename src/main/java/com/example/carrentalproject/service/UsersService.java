@@ -44,6 +44,12 @@ public class UsersService {
     }
 
     public Users registerUser(String username, String plainPassword, String email) {
+        if (usersRepository.findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("Username is already taken.");
+        }
+        if (usersRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("Email is already registered.");
+        }
         String hashedPassword = passwordEncoder.encode(plainPassword);
         Users user = new Users(username, hashedPassword, email);
         System.out.println("successfully registered with username, email, plain pw, hash pw: " + username + ", " + email + ", " + plainPassword + ", " + hashedPassword);

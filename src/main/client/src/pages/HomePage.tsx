@@ -6,10 +6,8 @@ import CarListings from '../components/CarListings';
 import ViewAllCars from '../components/ViewAllCars';
 import HeroListingFinder from '../components/HeroListingFinder';
 
-// don't need navbar here - it's gonan show on all pages
-//but hero component we only want here
-
-
+// TODO - listing page is not yet functional nor are listings in DB, so query doesn't fetch anything/have elements to populate
+ 
 const HomePage = () => {
 
   // grab user's search parameters and route user to CarsPage w/ fetched relevant listings 
