@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import axios from 'axios';
+import {useAuth} from '../../context/AuthContext';
 
 
 const SignupModal = ({ onClose }: { onClose: () => void }) => {
@@ -8,7 +9,7 @@ const SignupModal = ({ onClose }: { onClose: () => void }) => {
   const [password,setPassword] = useState('');
   const [errorMsg,setErrorMsg] = useState('');
   const [successMsg,setSuccessMsg] = useState('');
-
+  const {register} = useAuth();
 
 
 
@@ -29,14 +30,7 @@ const SignupModal = ({ onClose }: { onClose: () => void }) => {
 
     try {
       // register user
-      const registerResponse = await axios.post('http://localhost:8080/auth/register', {
-        
-        username,
-        email,
-        password,
-      },
-    {withCredentials:true}
-    );
+      await useAuth.re
       console.log('Registered user:', registerResponse.data);
       setSuccessMsg('Successfully registered! Logging you in...');
 

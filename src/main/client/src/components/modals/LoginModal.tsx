@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useAuth } from '../../context/AuthContext'
 import axios from 'axios';
 
 
@@ -8,19 +9,15 @@ const LoginModal = ({ onClose }: { onClose: () => void }) => { // onClose define
   const [remember,setRemember] = useState(false);
   const [errorMsg,setErrorMsg] = useState('');
   const [successMsg,setSuccessMsg] = useState('');
+  const {login} = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();Sho
+    e.preventDefault();
     console.log('login submit ', {username,password,remember})
 
     try { 
-      const loginResponse = await axios.post('http://localhost:8080/auth/login', { username, password }, { withCredentials: true });
-      const { token } = loginResponse.data;
-      console.log('Logged in, JWT:', token);
-
-      localStorage.setItem('jwt', token); // token persists. can change this
-
-
+      await login({username,password})
+      setSuccessMsg('Login was successful!')
       setTimeout(() => {
         onClose();
       }, 1000);

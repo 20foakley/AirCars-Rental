@@ -5,15 +5,9 @@ import {fetchCurrentUser,loginUser,logoutUser} from '../services/authService';
 import {Credentials} from '../types/auth';
 
 
-// now uses HTTP-only cookies as opposed to storing cookies in localStorage (safer!)
-// cookies are stored automatically by browser in its cookie jar, and used to show to back-end (bouncer) like a "VIP" pass or keycard
-
-
 interface User {
   username: string;
 }
-
-// store user object
 
 interface AuthContextType {
   user: User | null;
@@ -22,7 +16,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null); // we have an OR there bc till a value is passed via a Provider, AuthContext is null
+const AuthContext = createContext<AuthContextType | null>(null); 
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -35,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log('User validated successfuly! ',data.username);       
   })
       .catch((err) => {
+          console.error("Error in fetchCurrentUser:", err);
         if (err.response?.status === 401) {
           console.log("User does not exist")
         } else if (err.response?.status === 403) {
@@ -45,6 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .finally(() => setLoading(false));
   }, []);
 
+
+
 const login = async (credentials: Credentials) => {
   // backend directly sets access and refreshtoken
   // only worry about refresh token (we get it from /auth/me)
@@ -53,12 +50,15 @@ const login = async (credentials: Credentials) => {
   setUser(user);
 };
 
-  const logout = async () => {
-    await logoutUser();
-    setUser(null);
-  };
+const logout = async () => {
+  await logoutUser();
+  setUser(null);
+};
 
-  // provide all functionality to app via context
+const register = async({username,password,email}) => {
+  const user = await register({username,password,email})
+}
+
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}

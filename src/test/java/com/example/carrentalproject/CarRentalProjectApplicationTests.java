@@ -6,6 +6,7 @@ import com.example.carrentalproject.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.SpringVersion;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,4 +28,6 @@ class CarRentalProjectApplicationTests {
 		UsersService usersService = new UsersService(passwordEncoder, usersRepository);
 		usersService.registerUser(username, password, email);
 	}
+
+
 }

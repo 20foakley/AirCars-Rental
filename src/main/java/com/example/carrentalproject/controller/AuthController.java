@@ -10,8 +10,10 @@ import com.example.carrentalproject.security.JWTUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,7 +71,7 @@ public class AuthController {
             accessTokenCookie.setHttpOnly(true);
             accessTokenCookie.setSecure(true);
             accessTokenCookie.setPath("/");
-            accessTokenCookie.setMaxAge((int) (jwtUtil.getAccessExpiration() / 1000)); // change from ms to s
+            accessTokenCookie.setMaxAge((int) (jwtUtil.getAccessExpiration() / 1000)); // dividing by 1000 changes from ms to s
 
             Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
             refreshTokenCookie.setHttpOnly(true);
@@ -89,13 +91,21 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        // make session invalid, and clear security context
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        SecurityContextHolder.clearContext();
+
         // create an expired cookie to clear it on the client
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true); // use true in production with HTTPS
-        cookie.setPath("/auth/refresh"); // must match the path used during login
-        cookie.setMaxAge(0); // delete immediately
+        cookie.setSecure(true);
+        cookie.setPath("/auth/refresh");
+        cookie.setMaxAge(0);
 
         response.addCookie(cookie);
 
@@ -132,8 +142,8 @@ public class AuthController {
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            System.out.println("bad");
+        if (authentication == null || !authentication.isAuthenticated()  ||
+                authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
 
