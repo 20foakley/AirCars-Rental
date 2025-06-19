@@ -1,98 +1,97 @@
-import React, {useState} from 'react';
-import { useAuth } from '../../context/AuthContext'
-import axios from 'axios';
+import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
-
-const LoginModal = ({ onClose }: { onClose: () => void }) => { // onClose defined by HamburgerModal
-  const [username,setUsername] = useState('');
-  const [password,setPassword] = useState('');
-  const [remember,setRemember] = useState(false);
-  const [errorMsg,setErrorMsg] = useState('');
-  const [successMsg,setSuccessMsg] = useState('');
-  const {login} = useAuth();
+const LoginModal = ({ onClose }: { onClose: () => void }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [remember, setRemember] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('login submit ', {username,password,remember})
 
-    try { 
-      await login({username,password})
-      setSuccessMsg('Login was successful!')
+    try {
+      await login({ username, password });
+      setSuccessMsg('Login was successful!');
       setTimeout(() => {
         onClose();
       }, 1000);
+    } catch (error: any) {
+      console.error('Login failed:', error);
+      setErrorMsg('Sorry, something went wrong. Please try again.');
     }
-    catch (error: any) {
-    console.error('Registration or login failed:', error);
-    setErrorMsg('Sorry, something went wrong. Please try again.');
-    }
-  }
-   
-  
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-      <div className="bg-white rounded-lg p-6 shadow-xl w-96 relative">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-black">✕</button>
-        <h2 className="text-xl font-bold mb-4">Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="bg-white rounded-2xl p-8 shadow-2xl w-96 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-800 text-xl"
+        >
+          ✕
+        </button>
+        <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label>
-              <input
-                type = "username"
-                value= {username}
-                onChange={(e)=> setUsername(e.target.value)}
-                required
-                className=""
-                autoComplete = "username"
-              />
-            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              placeholder="Username"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="username"
+            />
           </div>
           <div>
-            <label>
-              <input
-                type = "password"
-                value= {password}
-                onChange={(e)=> setPassword(e.target.value)}
-                required
-                className=""
-              />
-            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="Password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="current-password"
+            />
           </div>
-          <div>
-            <label>
+
+          <div className="flex justify-between items-center text-sm">
+            <label className="flex items-center space-x-2">
               <input
-                type = "checkbox"
-                checked= {remember}
-                onChange={(e)=> setRemember(!remember)}
-                className=""
-                autoComplete='current-password'
+                type="checkbox"
+                checked={remember}
+                onChange={() => setRemember(!remember)}
+                className="accent-blue-500"
               />
-              <>Remember Me</>
+              <span>Remember Me</span>
             </label>
             <button
-              type = "button"
-              className=""
-              onClick= {() => alert('redirecting user to reset password modal')}
+              type="button"
+              className="text-blue-600 hover:underline"
+              onClick={() => alert('redirecting user to reset password modal')}
             >
               Forgot Password?
             </button>
           </div>
+
+          {errorMsg && (
+            <div className="text-red-500 text-sm text-center">{errorMsg}</div>
+          )}
+          {successMsg && (
+            <div className="text-green-600 text-sm text-center">{successMsg}</div>
+          )}
+
           <button
             type="submit"
-            className=""
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-200"
           >
             Login
           </button>
         </form>
-        
-        
-        
-        
-        
-        
-        
-        
-        
       </div>
     </div>
   );

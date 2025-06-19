@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import axios from 'axios';
 import React from 'react';
-import {fetchCurrentUser,loginUser,logoutUser} from '../services/authService';
+import {fetchCurrentUser,registerUser,loginUser,logoutUser} from '../services/authService';
 import {Credentials} from '../types/auth';
 
 
@@ -14,6 +14,8 @@ interface AuthContextType {
   loading: boolean;
   login: (credentials: Credentials) => Promise<void>;
   logout: () => Promise<void>;
+  register: ({username,password,email}) => Promise<void>;
+  fetchCurrentUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null); 
@@ -56,11 +58,20 @@ const logout = async () => {
 };
 
 const register = async({username,password,email}) => {
-  const user = await register({username,password,email})
+  try { 
+    await registerUser({username,password,email});
+    const user = await loginUser({username,password});
+    setUser(user);
+  }
+  catch (error: any){
+    const message = error?.response?.data?.message || error?.response?.data || 'Registration failed';
+    throw message;
+  }
+  
 }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, fetchCurrentUser, register, loading }}>
       {children}
     </AuthContext.Provider>
   );

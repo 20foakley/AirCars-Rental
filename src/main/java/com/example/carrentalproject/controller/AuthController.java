@@ -11,7 +11,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -67,20 +69,27 @@ public class AuthController {
             String accessToken = jwtUtil.generateAccessToken(loginRequest.getUsername());
             String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getUsername());
 
-            Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-            accessTokenCookie.setHttpOnly(true);
-            accessTokenCookie.setSecure(true);
-            accessTokenCookie.setPath("/");
-            accessTokenCookie.setMaxAge((int) (jwtUtil.getAccessExpiration() / 1000)); // dividing by 1000 changes from ms to s
+            // access token
+            ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken",accessToken)
+                    .path("/")
+                    .httpOnly(true)
+                    .secure(true)
+                    .maxAge(jwtUtil.getAccessExpiration() / 1000)
+                    .sameSite("Strict")
+                    .build();
 
-            Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-            refreshTokenCookie.setHttpOnly(true);
-            refreshTokenCookie.setSecure(true);
-            refreshTokenCookie.setPath("/auth/refresh");
-            refreshTokenCookie.setMaxAge((int) (jwtUtil.getRefreshExpiration() / 1000));
+            // refresh token
+            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken",refreshToken)
+                    .path("/auth/refresh")
+                    .httpOnly(true)
+                    .secure(true)
+                    .maxAge(jwtUtil.getRefreshExpiration() / 1000)
+                    .sameSite("Strict")
+                    .build();
 
-            response.addCookie(accessTokenCookie);
-            response.addCookie(refreshTokenCookie);
+            // add cookies to header
+            response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
             return ResponseEntity.ok(Map.of("message", "Login successful"));
         } catch (AuthenticationException e) {
@@ -100,14 +109,31 @@ public class AuthController {
 
         SecurityContextHolder.clearContext();
 
-        // create an expired cookie to clear it on the client
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/auth/refresh");
-        cookie.setMaxAge(0);
 
-        response.addCookie(cookie);
+        // create expired cookies to assassinate (clear) client cookies
+        // access path is "/" but refresh path is "/auth/refresh/"
+
+        ResponseCookie accessTokenCookieAssassin = ResponseCookie.from("accessToken","")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(false) // only for not https testing
+                .sameSite("Strict")
+                .build();
+
+        ResponseCookie refreshTokenCookieAssassin = ResponseCookie.from("refreshToken","")
+                .path("/auth/refresh")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(false) // only for not https testing
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookieAssassin.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE,refreshTokenCookieAssassin.toString());
+
+
+
 
         return ResponseEntity.ok("Logged out successfully.");
     }
@@ -134,6 +160,18 @@ public class AuthController {
 
         String username = jwtUtil.extractUsername(refreshToken);
         String newAccessToken = jwtUtil.generateAccessToken(username); // this is the short lived token
+
+        // create new access token cookie
+        ResponseCookie newAccessTokenCookie = ResponseCookie.from("accessToken",newAccessToken)
+                .path("/")
+                .httpOnly(true)
+                .secure(false)  // only for not https testing
+                .sameSite("Strict")
+                .maxAge(jwtUtil.getAccessExpiration() / 1000)
+                .build();
+
+
+
 
         return ResponseEntity.ok(new JWTResponse(newAccessToken));
     }

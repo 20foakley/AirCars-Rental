@@ -18,8 +18,13 @@ export const logoutUser = () => {
     axios.post('/api/auth/logout', {}, {withCredentials: true});
 };
 
-export const registerUser = async () => {
-    const res = await axios.get('/api/auth/register');
+export const registerUser = async ({username,password,email}) => {
+    const res = await axios.post('/api/auth/register',{
+        username,
+        password,
+        email
+    });
+    return res.data;
 
 
 }

@@ -1,5 +1,7 @@
 -- Frederick Oakley
 
+create schema if not exists p2p_car_rental;
+
 SET search_path TO p2p_car_rental;
 
 
@@ -12,8 +14,8 @@ CREATE table if not exists p2p_car_rental.users
     id serial NOT NULL,
     email character varying(40) NOT NULL UNIQUE,
     username character varying(20) NOT NULL UNIQUE,
-    first_name character varying(20) NOT NULL,
-    password character varying(60) NOT NULL,
+    first_name character varying(20),
+    password character varying(100) NOT NULL,
 	is_renter boolean,
     is_admin boolean,
 	date_of_birth date,

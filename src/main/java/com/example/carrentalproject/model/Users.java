@@ -52,7 +52,7 @@ public class Users implements Serializable {
     private String first_name;
 
     @NotNull
-    @Column(nullable = false, length = 60)
+    @Column(name="password", nullable = false, length = 60)
     private String hashedPassword ;
 
     @Column(name = "is_renter")
