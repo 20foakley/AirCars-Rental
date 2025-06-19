@@ -32,7 +32,7 @@ public class JWTUtil {
         this.refreshExpiration = refreshExpiration;
     }
 
-    public String generateToken(String username,long durationMs) {
+    public String generateToken(String username,long durationMs, String type) {
         // create signed token that contains user's identity (username)
         // used for refresh tokens as well as access tokens - specify duration to differentiate
         return Jwts.builder()
@@ -40,15 +40,16 @@ public class JWTUtil {
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + durationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
+                .claim("type",type)
                 .compact();
     }
 
     public String generateAccessToken(String username) {
-        return generateToken(username, accessExpiration);
+        return generateToken(username, accessExpiration,"access");
     }
 
     public String generateRefreshToken(String username) {
-        return generateToken(username, refreshExpiration);
+        return generateToken(username, refreshExpiration,"refresh");
     }
 
     public boolean validateToken(String token) {

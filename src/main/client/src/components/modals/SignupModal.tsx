@@ -9,7 +9,7 @@ const SignupModal = ({ onClose }: { onClose: () => void }) => {
   const [password,setPassword] = useState('');
   const [errorMsg,setErrorMsg] = useState('');
   const [successMsg,setSuccessMsg] = useState('');
-  const {register} = useAuth();
+  const {login, register, fetchCurrentUser} = useAuth();
 
 
 
@@ -30,12 +30,13 @@ const SignupModal = ({ onClose }: { onClose: () => void }) => {
 
     try {
       // register user
-      await useAuth.re
-      console.log('Registered user:', registerResponse.data);
-      setSuccessMsg('Successfully registered! Logging you in...');
+      const registerResponse = await register({username,password,email})
+      console.log('Register returned data:', registerResponse);
+      console.log('Registered user:', fetchCurrentUser());
+      setSuccessMsg('Successfully registered! Logging in...');
 
       // try auto login
-      const loginResponse = await axios.post('http://localhost:8080/auth/login', { username, password }, { withCredentials: true });
+      // const loginResponse = await axios.post('http://localhost:8080/auth/login', { username, password }, { withCredentials: true });
 
 
       /* const { token } = loginResponse.data;
@@ -48,13 +49,16 @@ const SignupModal = ({ onClose }: { onClose: () => void }) => {
         onClose();
       }, 1000);
 
-    } catch (error: any) {
+    } catch (error: any) { // need a better way to extract error messages
       console.error('Registration or login failed:', error);
+      if (typeof error == 'string') {
+        setErrorMsg(error);
+      }
       if(error.response && error.response.data){
         setErrorMsg(error.response.data) // backend caught existing username/email
       }
       else{ 
-        setErrorMsg('Sorry, something may have went wrong on our end. Please try again.');
+        setErrorMsg('Sorry, something went wrong on our end. Please try again.');
       }
     }
 

@@ -6,15 +6,15 @@ import SignupModal from './SignupModal';
 
 
 
-const HamburgerModal = () => {
+const HamburgerModal = ({ onClose }: { onClose: () => void }) => {
   // need to use AuthContext to determine whether to show sign up/login or just logout
   const { user, logout } = useAuth();
   console.log("hamburger modal user:", user);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const linkClass =  ({isActive} : {isActive:any}) =>  isActive ? 
-  'bg-yellow text-black hover:bg-gray-900 hover:text-white rounded px-3 py-2' 
-  : 'text-black hover:bg-gray-900 hover:text-white rounded px-3 py-2'
+  'bg-yellow text-black hover:bg-gray-600 hover:text-white rounded px-3 py-2' 
+  : 'text-black hover:bg-gray-600 hover:text-white rounded px-3 py-2'
   return (
     <>
       <div className="absolute right-0 top-20 w-48 bg-white shadow-lg rounded-2xl p-4 z-50 flex flex-col space-y-2 border border-gray-200">
@@ -29,13 +29,12 @@ const HamburgerModal = () => {
           </>
         ) : (
           <>
-          <button onClick={() => setShowLoginModal(true)} className={linkClass({ isActive: false })}>
-                Log In
-              </button>
-              <button onClick={() => setShowSignupModal(true)} className={linkClass({ isActive: false })}>
-                Sign Up
-              </button>
-              
+            <button onClick={() => setShowLoginModal(true)} className={linkClass({ isActive: false })}>
+                  Log In
+            </button>
+            <button onClick={() => setShowSignupModal(true)} className={linkClass({ isActive: false })}>
+              Sign Up
+            </button>             
           </>
           )}
         </div>

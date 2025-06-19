@@ -8,11 +8,12 @@ import HamburgerModal from "./modals/HamburgerModal.tsx"
 
 
 const Navbar = () => {
-  const linkClass =  ({isActive} : {isActive:any}) =>  isActive ? 
-  'bg-yellow text-black hover:bg-gray-900 hover:text-white rounded px-3 py-2' 
-  : 'text-black hover:bg-gray-900 hover:text-white rounded px-3 py-2'
   const [isOpen, setIsOpen] = React.useState(false);
-  const {user,logout} = useAuth(); 
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    isActive
+      ? "bg-yellow text-black hover:bg-gray-900 hover:text-white rounded px-3 py-2"
+      : "text-black hover:bg-gray-900 hover:text-white rounded px-3 py-2";
+  
   return (
     <>
     <nav className="bg-white">
@@ -33,13 +34,13 @@ const Navbar = () => {
             </NavLink>
             <div className="ml-auto">
               <div className="flex space-x-2 items-center">
-                <button onClick = {() => setIsOpen(!isOpen)} className = "">
-                  <Menu className = "z-10 w-6 h-6 text-black"/>
-                </button>
-                {isOpen && (
-                  <HamburgerModal/>
-
-                )}
+              <button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className={linkClass({ isActive: isOpen })}
+              >
+                <Menu className = "z-10 w-6 h-6 text-black" />
+              </button>
+                {isOpen && <HamburgerModal onClose={() => setIsOpen(false)} />}
               </div>
             </div>
           </div>
