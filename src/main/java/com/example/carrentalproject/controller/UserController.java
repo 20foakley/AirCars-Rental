@@ -14,18 +14,4 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserRepository usersRepository;
-
-    public UserController(UserRepository usersRepository) {
-        this.usersRepository = usersRepository;
-    }
-
-    @GetMapping
-    public List<User> getAllUsers() {
-        return usersRepository.findAll();
-
-
-
-
-    }
 }

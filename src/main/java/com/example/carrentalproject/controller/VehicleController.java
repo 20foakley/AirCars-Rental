@@ -13,14 +13,4 @@ import java.util.List;
 @RequestMapping("/vehicles")
 public class VehicleController {
 
-    private final VehiclesService vehiclesService;
-
-    public VehicleController(VehiclesService vehiclesService) {
-        this.vehiclesService = vehiclesService;
-    }
-
-    @GetMapping
-    public List<Vehicle> getAllVehicles() {
-        return vehiclesService.getAllVehicles();
-    }
 }

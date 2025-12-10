@@ -57,7 +57,7 @@ public class JWTUtil {
     }
 
     public boolean validateToken(String token) {
-        // check token's signature and expieration
+        // check token's signature and expiration
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
