@@ -5,7 +5,6 @@ import org.hibernate.annotations.Check;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
-import com.example.carrentalproject.model.Listings;
 
 @Entity
 @Table(name = "reviews", schema = "p2p_car_rental",
@@ -13,7 +12,7 @@ import com.example.carrentalproject.model.Listings;
                 @UniqueConstraint(columnNames = {"id"})
         })
 @Check(constraints = "reviewer_user_id <> reviewed_user_id")
-public class Reviews implements Serializable {
+public class Review implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,17 +21,17 @@ public class Reviews implements Serializable {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_user_id")
-    private Users reviewerUser;
+    private User reviewer;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewed_user_id")
-    private Users reviewedUser;
+    @JoinColumn(name = "reviewee_user_id")
+    private User reviewee;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "listing_id")
-    private Listings listing;
+    private Listing listing;
 
     @NotNull
     @Column(length = 20)
@@ -59,27 +58,27 @@ public class Reviews implements Serializable {
         this.id = id;
     }
 
-    public Users getReviewerUser() {
-        return reviewerUser;
+    public User getReviewer() {
+        return reviewer;
     }
 
-    public void setReviewerUser(Users reviewerUser) {
-        this.reviewerUser = reviewerUser;
+    public void setReviewer(User reviewer) {
+        this.reviewer = reviewer;
     }
 
-    public Users getReviewedUser() {
-        return reviewedUser;
+    public User getReviewee() {
+        return reviewee;
     }
 
-    public void setReviewedUser(Users reviewedUser) {
-        this.reviewedUser = reviewedUser;
+    public void setReviewee(User reviewee) {
+        this.reviewee = reviewee;
     }
 
-    public Listings getListing() {
+    public Listing getListing() {
         return listing;
     }
 
-    public void setListing(Listings listing) {
+    public void setListing(Listing listing) {
         this.listing = listing;
     }
 

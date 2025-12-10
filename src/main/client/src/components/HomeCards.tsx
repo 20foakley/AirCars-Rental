@@ -1,41 +1,34 @@
 import React from 'react';
-import Card from './Card';
 import { Link } from 'react-router-dom';
+import Card from './Card'
 import Listings_Card_Image1 from '../assets/images/autosnap-cars.png'
-import Listings_Card_Image2 from '../assets/images/listings-card.jpg'
+import Listings_Card_Image2 from '../assets/images/autosnap-cars2.png'
 
 const HomeCards = () => {
   return (
-    <section className="py-0">
+    <section className="py-8">
+
+      <Card 
+        image={Listings_Card_Image1}
+        altText="Variety of Cars"
+        heading="Dreams come true here."
+        description="No matter the occasion, find a ride that'll take you to cloud nine."
+        buttonText="Explore Cars"
+        buttonLink="/listings"
+        imageOnLeft={true}
+      />
+
       
+      <Card 
+        image={Listings_Card_Image2}
+        altText="Variety of Cars"
+        heading="Be your own boss."
+        description="List your car and start building an empire."
+        buttonText="List a Car"
+        buttonLink="/listings"
+        imageOnLeft={false}
+      />
 
-
-      <div className="flex bg-gray-100 p-6 rounded-lg shadow-md items-center justify-between">
-        
-        <div className="w-1/2 pr-4">
-          <picture>
-            <img
-              src={Listings_Card_Image1}
-              alt="Car browsing"
-              className="w-full h-auto rounded-lg"
-            />
-          </picture>
-        </div>
-
-        <div className="w-1/2 pl-4">
-            <h2 className="text-2xl font-bold">Dreams come true here.</h2>
-            <p className="mt-2 mb-4">
-              No matter the occasion, find a ride that'll take you to cloud nine.
-            </p>
-            <Link
-              to="/listings"
-              className="inline-block bg-black text-white rounded-lg px-4 py-2 hover:bg-gray-700"
-            >
-              Explore Cars
-            </Link>
-        </div>
-
-      </div>
     </section>
   );
 };

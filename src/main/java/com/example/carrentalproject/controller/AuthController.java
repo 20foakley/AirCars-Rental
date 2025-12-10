@@ -7,6 +7,7 @@ import com.example.carrentalproject.exception.UserNotFoundException;
 import com.example.carrentalproject.dto.JWTResponse;
 import com.example.carrentalproject.dto.LoginRequest;
 import com.example.carrentalproject.security.JWTUtil;
+import com.example.carrentalproject.model.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,6 +46,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        System.out.println(registerRequest.getPassword());
         try {
             usersService.registerUser(
                     registerRequest.getUsername(),
@@ -61,6 +63,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        System.out.println("loginRequest: " + loginRequest.getPassword()+loginRequest.getUsername());
+        System.out.println("response: " + response);
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
@@ -100,7 +104,14 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> logout(@AuthenticationPrincipal User user,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) {
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
         // make session invalid, and clear security context
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -155,7 +166,7 @@ public class AuthController {
         }
 
         if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Your session has expired. Please log back in");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Your session has expired");
         }
 
         String username = jwtUtil.extractUsername(refreshToken);
@@ -177,16 +188,11 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()  ||
-                authentication instanceof AnonymousAuthenticationToken) {
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal User user) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
-
-        String username = authentication.getName();
-        return ResponseEntity.ok(Map.of("username", username));
+        return ResponseEntity.ok(Map.of("username", user.getUsername()));
     }
 
 

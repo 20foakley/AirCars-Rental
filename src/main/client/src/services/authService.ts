@@ -1,31 +1,31 @@
-import axios from 'axios'
-import {Credentials} from '../types/auth'
-
+import {LoginCredentials,RegisterCredentials} from '../types/auth'
+import apiClient from './apiClient';
 
 // can implement useCallBack 
-export const loginUser = async (credentials: Credentials) => {
-    await axios.post('/api/auth/login', credentials, {withCredentials: true});
+export const loginUser = async (loginCredentials: LoginCredentials) => {
+    console.log("loginUser credentials: ", loginCredentials)
+    await apiClient.post('/auth/login',loginCredentials)
     await new Promise(res => setTimeout(res,100));
-    return fetchCurrentUser();
+    return refreshUser();
 }; 
 
-export const fetchCurrentUser = async  () => { // browser takes magic cookie from its jar, shows it to backend, then gets back user info!
-    const res = await axios.get('/api/auth/me', {withCredentials:true});
-    console.log("fetchCurrentUser data" + res.data);
+export const refreshUser = async  () => { // browser takes magic cookie from its jar, shows it to backend, then gets back user info!
+    const res = await apiClient.get('/auth/me')
+    console.log("refreshUser data" + res.data);
     return res.data; 
 };
 
 export const logoutUser = async () => {
-    await axios.post('/api/auth/logout', {}, {withCredentials: true});
+    const res = await apiClient.post('/auth/logout')
+    return res.data;
 };
 
-export const registerUser = async ({username,password,email}) => {
-    const res = await axios.post('/api/auth/register',{
-        username,
-        password,
-        email
-    });
+export const registerUser = async (registerCredentials: RegisterCredentials) => {
+    const res = await apiClient.post('/auth/register',
+        registerCredentials
+    ,
+    { headers: { 'Content-Type': 'application/json' }}
+
+);
     return res.data;
-
-
-}
+};

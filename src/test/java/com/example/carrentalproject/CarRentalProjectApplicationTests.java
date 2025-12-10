@@ -1,12 +1,10 @@
 package com.example.carrentalproject;
 
-import com.example.carrentalproject.model.Users;
-import com.example.carrentalproject.repository.UsersRepository;
+import com.example.carrentalproject.repository.UserRepository;
 import com.example.carrentalproject.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.SpringVersion;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,7 +15,7 @@ class CarRentalProjectApplicationTests {
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
-	private UsersRepository usersRepository;
+	private UserRepository usersRepository;
 
 	@Test
 	void testRegisterUser() {

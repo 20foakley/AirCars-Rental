@@ -1,5 +1,5 @@
 package com.example.carrentalproject.dto;
-import com.example.carrentalproject.model.Users;
+import com.example.carrentalproject.model.User;
 
 public class UserDTO {
     // need to add other attributes here at some point (role?)
@@ -7,7 +7,7 @@ public class UserDTO {
     private Long id;
     private String username;
 
-    public UserDTO(Users user) {
+    public UserDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
     }

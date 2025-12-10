@@ -1,9 +1,11 @@
 package com.example.carrentalproject.security;
 
+import com.example.carrentalproject.service.MyUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -15,6 +17,7 @@ public class JWTUtil {
     private final Key key;
     private final long accessExpiration;
     private final long refreshExpiration;
+    final MyUserDetailsService myUserDetailsService;
 
     public long getAccessExpiration() {
         return accessExpiration;
@@ -26,10 +29,11 @@ public class JWTUtil {
 
     public JWTUtil(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.accessExpirationMs}") long accessExpiration,
-                   @Value("${jwt.refreshExpirationMs}") long refreshExpiration) {
+                   @Value("${jwt.refreshExpirationMs}") long refreshExpiration, MyUserDetailsService myUserDetailsService) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.accessExpiration = accessExpiration;
         this.refreshExpiration = refreshExpiration;
+        this.myUserDetailsService = myUserDetailsService;
     }
 
     public String generateToken(String username,long durationMs, String type) {

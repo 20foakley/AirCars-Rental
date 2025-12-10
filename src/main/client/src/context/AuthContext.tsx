@@ -1,21 +1,18 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import axios from 'axios';
-import React from 'react';
-import {fetchCurrentUser,registerUser,loginUser,logoutUser} from '../services/authService';
-import {Credentials} from '../types/auth';
+import {refreshUser,registerUser,loginUser,logoutUser} from '../services/authService';
+import {LoginCredentials,RegisterCredentials} from '../types/auth';
+import {User} from '../types/user';
 
 
-interface User {
-  username: string;
-}
+
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (credentials: Credentials) => Promise<void>;
+  login: (LoginCredentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
-  register: ({username,password,email}) => Promise<void>;
-  fetchCurrentUser: () => Promise<void>
+  register: (RegisterCredentials: RegisterCredentials) => Promise<void>;
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null); 
@@ -27,16 +24,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
   useEffect(() => {
-    fetchCurrentUser().then(data => {setUser(data);
+    refreshUser().then(data => {setUser(data);
         console.log('User validated successfuly! ',data.username);       
   })
       .catch((err) => {
-          console.error("Error in fetchCurrentUser:", err);
-        if (err.response?.status === 401) {
-          console.log("User does not exist")
-        } else if (err.response?.status === 403) {
-          console.log("User not logged in, or internal server error")
+        if (err.response?.status === 403) {
+          console.log("User not logged in");
         }
+        else if (err.response?.status === 400) {
+          console.log("Bad Request");
+          
+        }
+
         setUser(null)
 })
       .finally(() => setLoading(false));
@@ -44,23 +43,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
 
-const login = async (credentials: Credentials) => {
+const login = async (loginCredentials: LoginCredentials) => {
   // backend directly sets access and refreshtoken
   // only worry about refresh token (we get it from /auth/me)
-  const user = await loginUser(credentials);
-  console.log('user: ',user.username)
-  setUser(user);
+  try { 
+    const user = await loginUser(loginCredentials);
+    console.log('user: ',user.username)
+    setUser(user);
+  }
+  catch (error:any) {
+    const message = error?.response?.data?.message || "Login failed";
+    throw message;
+  }
 };
 
 const logout = async () => {
-  await logoutUser();
-  setUser(null);
+  try {
+    await logoutUser();
+    setUser(null);
+  }
+  catch(error){
+    console.error(error);
+  }
 };
 
-const register = async({username,password,email}) => {
+const register = async(registerCredentials : RegisterCredentials) => {
   try { 
-    await registerUser({username,password,email});
-    const user = await loginUser({username,password});
+    await registerUser(registerCredentials);
+    const user = await loginUser(registerCredentials);
     setUser(user);
   }
   catch (error: any){
@@ -71,7 +81,7 @@ const register = async({username,password,email}) => {
 }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, fetchCurrentUser, register, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, refreshUser, register, loading }}>
       {children}
     </AuthContext.Provider>
   );

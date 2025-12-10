@@ -1,10 +1,11 @@
 package com.example.carrentalproject.service;
 
 import com.example.carrentalproject.exception.UserNotFoundException;
-import com.example.carrentalproject.model.Users;
-import com.example.carrentalproject.repository.UsersRepository;
+import com.example.carrentalproject.model.User;
+import com.example.carrentalproject.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,46 +14,48 @@ import java.util.Optional;
 @Service
 public class UsersService {
 
-    private final BCryptPasswordEncoder passwordEncoder;
-    private final UsersRepository usersRepository;
+    // Learning experience: I had PasswordEncoder listed as BCryptPasswordEncoder
+    // But this violates loose coupling and testability
 
-    @Autowired
-    public UsersService(BCryptPasswordEncoder passwordEncoder, UsersRepository usersRepository) {
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    
+    public UsersService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
-        this.usersRepository = usersRepository;
+        this.userRepository = userRepository;
     }
 
-    public Users saveUser(Users user) {
-        return usersRepository.save(user);
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 
-    public Optional<Users> getUserById(Long id) {
-        return usersRepository.findById(id);
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 
-    public Users getUserByEmail(String email) {
-        return usersRepository.findByEmail(email)
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User with email " + email + " not found"));
     }
 
-    public List<Users> getAllUsers() {
-        return usersRepository.findAll();
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public void deleteUser(Long id) {
-        usersRepository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
-    public Users registerUser(String username, String plainPassword, String email) {
-        if (usersRepository.findByUsername(username).isPresent()) {
+    public User registerUser(String username, String password, String email) {
+        if (userRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException("Username is already taken.");
         }
-        if (usersRepository.findByEmail(email).isPresent()) {
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("Email is already registered.");
         }
-        String hashedPassword = passwordEncoder.encode(plainPassword);
-        Users user = new Users(username, hashedPassword, email);
-        System.out.println("successfully registered with username, email, plain pw, hash pw: " + username + ", " + email + ", " + plainPassword + ", " + hashedPassword);
-        return usersRepository.save(user);
+        String hashedPassword = passwordEncoder.encode(password);
+        User user = new User(username, hashedPassword, email);
+        System.out.println("successfully registered with username, email, plain pw, hash pw: " + username + ", " + email + ", " + password + ", " + hashedPassword);
+        return userRepository.save(user);
     }
 }

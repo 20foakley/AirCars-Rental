@@ -9,7 +9,7 @@ const SignupModal = ({ onClose }: { onClose: () => void }) => {
   const [password,setPassword] = useState('');
   const [errorMsg,setErrorMsg] = useState('');
   const [successMsg,setSuccessMsg] = useState('');
-  const {login, register, fetchCurrentUser} = useAuth();
+  const {register, refreshUser} = useAuth();
 
 
 
@@ -32,20 +32,11 @@ const SignupModal = ({ onClose }: { onClose: () => void }) => {
       // register user
       const registerResponse = await register({username,password,email})
       console.log('Register returned data:', registerResponse);
-      console.log('Registered user:', fetchCurrentUser());
+      console.log('Registered user:', refreshUser());
       setSuccessMsg('Successfully registered! Logging in...');
+      onClose();
 
-      // try auto login
-      // const loginResponse = await axios.post('http://localhost:8080/auth/login', { username, password }, { withCredentials: true });
-
-
-      /* const { token } = loginResponse.data;
-      console.log('Logged in, JWT:', token); now that JWT token is stored HTTP-only, we can't access this.*/
-
-      //localStorage.setItem('jwt', token); 
-
-
-      setTimeout(() => {
+     setTimeout(() => {
         onClose();
       }, 1000);
 

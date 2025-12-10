@@ -7,8 +7,9 @@ const Hero = () => {
   return (
     <section className="bg-white z-0">
       <div className="relative w-full min-h-[60vh] mt-2 overflow-hidden">
- 
-        <HeroListingFinder />
+        <div className="w-[90%] md:w-[80%] lg:w-[70%] xl:w-[60%]">
+          <HeroListingFinder />
+        </div>
         <picture className="absolute inset-0 w-full h-full">
           {/* fallback image */}
           <img

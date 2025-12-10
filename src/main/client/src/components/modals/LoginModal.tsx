@@ -15,6 +15,7 @@ const LoginModal = ({ onClose }: { onClose: () => void }) => {
     try {
       await login({ username, password });
       setSuccessMsg('Login was successful!');
+      onClose();
       setTimeout(() => {
         onClose();
       }, 1000);

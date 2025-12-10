@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage.tsx';
 import MainLayout from './layouts/MainLayout';
 import CarsPage from './pages/CarsPage.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
+import ListPage from './pages/ListPage.tsx'
 import ProfilePage from './pages/ProfilePage.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
 import PrivateRoute from './routes/PrivateRoute.tsx';
@@ -19,6 +20,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<MainLayout />}>
       <Route index element={<HomePage />} />
       <Route path="/listings" element={<CarsPage />} />
+      <Route path ="/list" element = {<ListPage/>}/>
       <Route
         path="/profile"
         element={

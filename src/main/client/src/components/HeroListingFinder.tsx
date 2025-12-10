@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import useUserLocation from '../hooks/useUserLocation';
 import useReverseGeocode from '../hooks/useReverseGeocode';

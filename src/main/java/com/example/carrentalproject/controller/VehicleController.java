@@ -1,6 +1,6 @@
 package com.example.carrentalproject.controller;
 
-import com.example.carrentalproject.model.Vehicles;
+import com.example.carrentalproject.model.Vehicle;
 import com.example.carrentalproject.service.VehiclesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +12,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/vehicles")
 public class VehicleController {
-    @Autowired
-    private VehiclesService vehiclesService;
+
+    private final VehiclesService vehiclesService;
+
+    public VehicleController(VehiclesService vehiclesService) {
+        this.vehiclesService = vehiclesService;
+    }
 
     @GetMapping
-    public List<Vehicles> getAllVehicles() {
+    public List<Vehicle> getAllVehicles() {
         return vehiclesService.getAllVehicles();
     }
 }
