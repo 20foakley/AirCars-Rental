@@ -19,14 +19,6 @@ public class JWTUtil {
     private final long refreshExpiration;
     final MyUserDetailsService myUserDetailsService;
 
-    public long getAccessExpiration() {
-        return accessExpiration;
-    }
-
-    public long getRefreshExpiration() {
-        return refreshExpiration;
-    }
-
     public JWTUtil(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.accessExpirationMs}") long accessExpiration,
                    @Value("${jwt.refreshExpirationMs}") long refreshExpiration, MyUserDetailsService myUserDetailsService) {
@@ -77,6 +69,14 @@ public class JWTUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public long getAccessExpiration() {
+        return accessExpiration;
+    }
+
+    public long getRefreshExpiration() {
+        return refreshExpiration;
     }
 
 

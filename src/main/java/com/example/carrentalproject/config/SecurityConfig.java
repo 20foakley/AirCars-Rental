@@ -45,7 +45,6 @@ public class SecurityConfig {
                 .build();
     }
 
-
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
@@ -59,10 +58,6 @@ public class SecurityConfig {
         return new CorsFilter(source);
     }
 
-   /* @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }*/
 
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder encoder) {
@@ -71,6 +66,8 @@ public class SecurityConfig {
         provider.setPasswordEncoder(encoder);
         return new ProviderManager(provider);
     }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -23,6 +23,11 @@ public class MyUserDetailsService implements UserDetailsService {
         User user = usersRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+
+        System.out.println("Loaded user: " + user.getUsername());
+        System.out.println("Loaded password hash: " + user.getPassword());
+
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),

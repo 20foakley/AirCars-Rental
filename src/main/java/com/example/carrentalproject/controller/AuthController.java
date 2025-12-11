@@ -1,58 +1,46 @@
 package com.example.carrentalproject.controller;
 
-import com.example.carrentalproject.dto.UserDTO;
-import com.example.carrentalproject.service.UsersService;
-import com.example.carrentalproject.dto.RegisterRequest;
-import com.example.carrentalproject.exception.UserNotFoundException;
-import com.example.carrentalproject.dto.JWTResponse;
-import com.example.carrentalproject.dto.LoginRequest;
-import com.example.carrentalproject.security.JWTUtil;
-import com.example.carrentalproject.model.User;
-import jakarta.servlet.http.Cookie;
+import com.example.carrentalproject.dto.*;
+import com.example.carrentalproject.security.CookieUtil;
+import com.example.carrentalproject.service.AuthService;
+import com.example.carrentalproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
-import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthenticationManager authManager;
-    private final JWTUtil jwtUtil;
-    private final UsersService usersService;
+    private final UserService userService;
+    private final AuthService authService;
+    private final AuthenticationManager authenticationManager;
+    private final CookieUtil cookieUtil;
 
-    public AuthController(AuthenticationManager authManager, JWTUtil jwtUtil, UsersService usersService) {
-        this.authManager = authManager;
-        this.jwtUtil = jwtUtil;
-        this.usersService = usersService;
+
+    public AuthController(AuthenticationManager authenticationManager, AuthService authService, UserService userService, CookieUtil cookieUtil) {
+        this.authenticationManager = authenticationManager;
+        this.authService = authService;
+        this.userService = userService;
+        this.cookieUtil = cookieUtil;
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
         System.out.println(registerRequest.getPassword());
         try {
-            usersService.registerUser(
-                    registerRequest.getUsername(),
-                    registerRequest.getPassword(),
-                    registerRequest.getEmail()
-            );
+            userService.registerUser(registerRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully!");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -63,37 +51,25 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        System.out.println("loginRequest: " + loginRequest.getPassword()+loginRequest.getUsername());
-        System.out.println("response: " + response);
+        System.out.println("loginRequest password and username : " + loginRequest.getPassword() + " " + loginRequest.getUsername());
         try {
-            Authentication authentication = authManager.authenticate(
+            // will do more research to see if I should move this somewhere else, but I do use it to send an error response
+            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
 
-            String accessToken = jwtUtil.generateAccessToken(loginRequest.getUsername());
-            String refreshToken = jwtUtil.generateRefreshToken(loginRequest.getUsername());
-
-            // access token
-            ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken",accessToken)
-                    .path("/")
-                    .httpOnly(true)
-                    .secure(true)
-                    .maxAge(jwtUtil.getAccessExpiration() / 1000)
-                    .sameSite("Strict")
-                    .build();
-
-            // refresh token
-            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken",refreshToken)
-                    .path("/auth/refresh")
-                    .httpOnly(true)
-                    .secure(true)
-                    .maxAge(jwtUtil.getRefreshExpiration() / 1000)
-                    .sameSite("Strict")
-                    .build();
+            // tokens contains access and refresh token
+            TokensDTO tokens = authService.login(loginRequest);
 
             // add cookies to header
-            response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+            // maybe should change the toString, but I feel cookieUtil should return Cookie, not String
+            System.out.println("access token : " + tokens.getAccessToken());
+            System.out.println("refresh token : " + tokens.getRefreshToken());
+            System.out.println("access token cookie: " + cookieUtil.createAccessCookie(tokens.getAccessToken()).toString());
+            System.out.println("refresh token cookie: " + cookieUtil.createRefreshCookie(tokens.getRefreshToken()).toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createRefreshCookie(tokens.getRefreshToken()).toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createAccessCookie(tokens.getAccessToken()).toString());
+
 
             return ResponseEntity.ok(Map.of("message", "Login successful"));
         } catch (AuthenticationException e) {
@@ -104,13 +80,11 @@ public class AuthController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal User user,
-                                    HttpServletRequest request,
-                                    HttpServletResponse response) {
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
-        }
+        // clear the user's active cookies
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createDeleteAccessCookie().toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createDeleteRefreshCookie().toString());
 
         // make session invalid, and clear security context
         HttpSession session = request.getSession(false);
@@ -120,32 +94,6 @@ public class AuthController {
 
         SecurityContextHolder.clearContext();
 
-
-        // create expired cookies to assassinate (clear) client cookies
-        // access path is "/" but refresh path is "/auth/refresh/"
-
-        ResponseCookie accessTokenCookieAssassin = ResponseCookie.from("accessToken","")
-                .path("/")
-                .maxAge(0)
-                .httpOnly(true)
-                .secure(false) // only for not https testing
-                .sameSite("Strict")
-                .build();
-
-        ResponseCookie refreshTokenCookieAssassin = ResponseCookie.from("refreshToken","")
-                .path("/auth/refresh")
-                .maxAge(0)
-                .httpOnly(true)
-                .secure(false) // only for not https testing
-                .sameSite("Strict")
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookieAssassin.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE,refreshTokenCookieAssassin.toString());
-
-
-
-
         return ResponseEntity.ok("Logged out successfully.");
     }
 
@@ -153,48 +101,27 @@ public class AuthController {
     // refresh short-term token.
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        try {
+            TokensDTO tokens = authService.refreshUserTokens(request.getCookies(), response);
+            response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createAccessCookie(tokens.getAccessToken()).toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createRefreshCookie(tokens.getRefreshToken()).toString());
+            return ResponseEntity.ok(Map.of("message", "Refresh successful"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        String refreshToken = null;
-        for (Cookie cookie : cookies) {
-            if ("refreshToken".equals(cookie.getName())) {
-                refreshToken = cookie.getValue(); // found refreshtoken
-                break;
-            }
-        }
-
-        if (refreshToken == null || !jwtUtil.validateToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Your session has expired");
-        }
-
-        String username = jwtUtil.extractUsername(refreshToken);
-        String newAccessToken = jwtUtil.generateAccessToken(username); // this is the short lived token
-
-        // create new access token cookie
-        ResponseCookie newAccessTokenCookie = ResponseCookie.from("accessToken",newAccessToken)
-                .path("/")
-                .httpOnly(true)
-                .secure(false)  // only for not https testing
-                .sameSite("Strict")
-                .maxAge(jwtUtil.getAccessExpiration() / 1000)
-                .build();
-
-
-
-
-        return ResponseEntity.ok(new JWTResponse(newAccessToken));
     }
 
+
+
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal User user) {
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        if (authentication == null || authentication.isAuthenticated() == false) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok(Map.of("username", user.getUsername()));
+        String username = authentication.getName();
+        UserDTO userDTO =  userService.getUserByUsername(username);
+        return ResponseEntity.ok(userDTO);
     }
 
 
 }
-

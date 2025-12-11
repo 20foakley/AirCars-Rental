@@ -131,16 +131,6 @@ public class User implements UserDetails, Serializable {
 
     // Getters and Setters
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> isAdmin ? "ROLE_ADMIN" : "ROLE_USER");
-    }
-
-    @Override
-    public String getPassword() {
-        return "";
-    }
-
 
     public Long getId() {
         return id;
@@ -190,47 +180,37 @@ public class User implements UserDetails, Serializable {
         this.email = email;
     }
 
+    @Override
     public String getUsername() {
         return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getFirst_name() {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirst_name(String first_name) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getpassword () {
-        return password ;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setpassword (String password ) {
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -313,4 +293,46 @@ public class User implements UserDetails, Serializable {
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
     }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> isAdmin ? "ROLE_ADMIN" : "ROLE_USER");
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
 }
