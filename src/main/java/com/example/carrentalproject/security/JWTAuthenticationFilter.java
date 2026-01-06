@@ -21,6 +21,10 @@ import java.util.List;
 
 import com.example.carrentalproject.service.MyUserDetailsService;
 
+// I had to create this custom filter, because Spring Security has no cookie-JWT support
+// This filter runs once per every request and checks whether the client has
+// provided a valid JWT access token, which is stored in a cookie sent with response.
+
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
@@ -38,6 +42,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         String token = null;
 
+
+        // Extract JWT from accessToken cookie
+        // Note how we extract the cookie from the request
+        // (meaning we use httpOnly security)
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("accessToken".equals(cookie.getName())) {
@@ -46,11 +54,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-
+        // If token exists and is valid, then validate the user
         if (token != null && jwtUtil.validateToken(token)) {
             String username = jwtUtil.extractUsername(token);
             UserDetails userDetails = jwtUtil.myUserDetailsService.loadUserByUsername(username);
 
+            // I made credentials null, since we already authenticated the user
+            // Also made authorities null since I haven't implemented roles yet.
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(userDetails, null, Collections.emptyList());
 

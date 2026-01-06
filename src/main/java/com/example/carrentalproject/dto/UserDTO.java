@@ -3,7 +3,7 @@ import com.example.carrentalproject.model.User;
 
 public class UserDTO {
     // need to add other attributes here at some point (role?)
-    // more secure way to send user info without including a bunch of unnecessary fields!
+    // this class provides a more secure and efficient way to send user info without including a bunch of unnecessary fields!
     private Long id;
     private String username;
 

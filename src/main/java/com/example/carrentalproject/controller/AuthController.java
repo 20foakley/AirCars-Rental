@@ -1,7 +1,7 @@
 package com.example.carrentalproject.controller;
 
 import com.example.carrentalproject.dto.*;
-import com.example.carrentalproject.security.CookieUtil;
+import com.example.carrentalproject.security.JWTCookieService;
 import com.example.carrentalproject.service.AuthService;
 import com.example.carrentalproject.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,14 +26,14 @@ public class AuthController {
     private final UserService userService;
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
-    private final CookieUtil cookieUtil;
+    private final JWTCookieService JWTCookieService;
 
 
-    public AuthController(AuthenticationManager authenticationManager, AuthService authService, UserService userService, CookieUtil cookieUtil) {
+    public AuthController(AuthenticationManager authenticationManager, AuthService authService, UserService userService, JWTCookieService JWTCookieService) {
         this.authenticationManager = authenticationManager;
         this.authService = authService;
         this.userService = userService;
-        this.cookieUtil = cookieUtil;
+        this.JWTCookieService = JWTCookieService;
     }
 
     @PostMapping("/register")
@@ -65,10 +65,10 @@ public class AuthController {
             // maybe should change the toString, but I feel cookieUtil should return Cookie, not String
             System.out.println("access token : " + tokens.getAccessToken());
             System.out.println("refresh token : " + tokens.getRefreshToken());
-            System.out.println("access token cookie: " + cookieUtil.createAccessCookie(tokens.getAccessToken()).toString());
-            System.out.println("refresh token cookie: " + cookieUtil.createRefreshCookie(tokens.getRefreshToken()).toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createRefreshCookie(tokens.getRefreshToken()).toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createAccessCookie(tokens.getAccessToken()).toString());
+            System.out.println("access token cookie: " + JWTCookieService.createAccessCookie(tokens.getAccessToken()).toString());
+            System.out.println("refresh token cookie: " + JWTCookieService.createRefreshCookie(tokens.getRefreshToken()).toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, JWTCookieService.createRefreshCookie(tokens.getRefreshToken()).toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, JWTCookieService.createAccessCookie(tokens.getAccessToken()).toString());
 
 
             return ResponseEntity.ok(Map.of("message", "Login successful"));
@@ -83,8 +83,8 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 
         // clear the user's active cookies
-        response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createDeleteAccessCookie().toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createDeleteRefreshCookie().toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, JWTCookieService.createDeleteAccessCookie().toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, JWTCookieService.createDeleteRefreshCookie().toString());
 
         // make session invalid, and clear security context
         HttpSession session = request.getSession(false);
@@ -103,9 +103,9 @@ public class AuthController {
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         try {
             TokensDTO tokens = authService.refreshUserTokens(request.getCookies(), response);
-            response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createAccessCookie(tokens.getAccessToken()).toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, cookieUtil.createRefreshCookie(tokens.getRefreshToken()).toString());
-            return ResponseEntity.ok(Map.of("message", "Refresh successful"));
+            response.addHeader(HttpHeaders.SET_COOKIE, JWTCookieService.createAccessCookie(tokens.getAccessToken()).toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, JWTCookieService.createRefreshCookie(tokens.getRefreshToken()).toString());
+            return ResponseEntity.ok("Refresh successful");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }

@@ -1,14 +1,13 @@
 package com.example.carrentalproject.security;
 
-import io.jsonwebtoken.Jwt;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CookieUtil {
+public class JWTCookieService {
     private final JWTUtil jwtUtil;
 
-    public CookieUtil(JWTUtil jwtUtil) {
+    public JWTCookieService(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
